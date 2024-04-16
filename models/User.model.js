@@ -13,6 +13,11 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required."],
     },
+    username: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     image: {
       type: String,
       // TODO : upload default image onto cloudinary
