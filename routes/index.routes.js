@@ -7,5 +7,6 @@ router.get("/", (req, res, next) => {
 });
 
 router.use("/figures", require("./figures.routes.js"));
+router.use("/auth", require("./auth.routes.js"));
 
 module.exports = router;

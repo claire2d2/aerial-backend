@@ -10,13 +10,21 @@ const SALT = 10;
 
 router.post("/signup", async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
     const foundUser = await User.findOne({ email });
     if (foundUser) {
       return res.status(400).json({ message: "This email is already used" });
     }
+    const foundUsername = await User.findOne({ username });
+    if (foundUsername) {
+      return res.status(400).json({ message: "This username is already used" });
+    }
     const hashedPassword = await bcrypt.hash(password, SALT);
-    const createdUser = await User.create({ email, password: hashedPassword });
+    const createdUser = await User.create({
+      email,
+      username,
+      password: hashedPassword,
+    });
     res.status(201).json({ message: "User created", id: createdUser._id });
   } catch (error) {
     next(error);

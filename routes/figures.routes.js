@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const Figure = require("./../models/Figure.model");
 
-//! All routes here are prefixed with /api/figures
+//! all routes here are prefixed with /api/figures
 
 // get all the figures depending on the discipline
 router.get("/:discipline", async (req, res, next) => {
