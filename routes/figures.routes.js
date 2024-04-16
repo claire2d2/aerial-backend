@@ -4,7 +4,7 @@ const Figure = require("./../models/Figure.model");
 //! all routes here are prefixed with /api/figures
 
 // get all the figures depending on the discipline
-router.get("/:discipline", async (req, res, next) => {
+router.get("/by/:discipline", async (req, res, next) => {
   try {
     let disciplineId;
     const { discipline } = req.params;
@@ -23,6 +23,16 @@ router.get("/:discipline", async (req, res, next) => {
     }
     const allFigures = await Figure.find({ discipline: disciplineId });
     res.status(200).json(allFigures);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/:figureRef", async (req, res, next) => {
+  try {
+    const { figureRef } = req.params;
+    const oneFigure = await Figure.findOne({ ref: figureRef });
+    res.status(200).json(oneFigure);
   } catch (error) {
     next(error);
   }

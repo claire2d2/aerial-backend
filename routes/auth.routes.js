@@ -48,6 +48,7 @@ router.post("/login", async (req, res, next) => {
     });
     res.status(200).json({ authToken: token });
   } catch (error) {
+    console.log(error);
     next(SyntaxError);
   }
 });

@@ -5,6 +5,10 @@ const figureSchema = new Schema({
     type: String,
     unique: true,
   },
+  ref: {
+    type: String,
+    unique: true,
+  },
   discipline: {
     type: Schema.Types.ObjectId,
   },

@@ -2,7 +2,7 @@ const router = require("express").Router();
 
 //! all routes here are prefixed with /api
 
-router.get("/", (req, res, next) => {
+router.get("/health", (req, res, next) => {
   res.json("All good in here");
 });
 
