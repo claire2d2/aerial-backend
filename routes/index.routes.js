@@ -8,5 +8,6 @@ router.get("/", (req, res, next) => {
 
 router.use("/figures", require("./figures.routes.js"));
 router.use("/auth", require("./auth.routes.js"));
+router.use("/favorites", require("./favorites.routes.js"));
 
 module.exports = router;
