@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Figure = require("./../models/Figure.model");
+const ProgressLog = require("./../models/ProgressLog.model");
 
 //! all routes here are prefixed with /api/figures
 
@@ -28,13 +29,19 @@ router.get("/by/:discipline", async (req, res, next) => {
   }
 });
 
+// get a specific figure and the related progress logs
+// TODO get the related entries/exits?
+// TODO if possibility to add a figure, add all the states for existing users
 router.get("/:figureRef", async (req, res, next) => {
   try {
     const { figureRef } = req.params;
     const oneFigure = await Figure.findOne({ ref: figureRef }).populate(
       "discipline"
     );
-    res.status(200).json(oneFigure);
+    const progressLogs = await ProgressLog.find({ figure: oneFigure.id })
+      .sort({ date: -1 })
+      .populate("status");
+    res.status(200).json({ oneFigure, progressLogs });
   } catch (error) {
     next(error);
   }

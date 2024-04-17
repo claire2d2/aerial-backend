@@ -2,6 +2,7 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./../models/User.model");
+const State = require("./../models/State.model");
 const isAuthenticated = require("./../middlewares/isAuthenticated");
 
 const SALT = 10;
@@ -11,6 +12,9 @@ const SALT = 10;
 router.post("/signup", async (req, res, next) => {
   try {
     const { email, password, username } = req.body;
+    // in front end, input figures state when user signs up, to initialize each figure to "not seen yet"
+    const { figures } = req.body;
+    // if user already exists, error
     const foundUser = await User.findOne({ email });
     if (foundUser) {
       return res.status(400).json({ message: "This email is already used" });
@@ -25,6 +29,18 @@ router.post("/signup", async (req, res, next) => {
       username,
       password: hashedPassword,
     });
+
+    // initialize figure states
+    const initialStates = figures.map(async (figureId) => {
+      await State.create({
+        figure: figureId,
+        owner: createdUser._id,
+        name: "Not seen yet",
+      });
+    });
+    await Promise.all(initialStates);
+
+    // message is user and states are correctly created
     res.status(201).json({ message: "User created", id: createdUser._id });
   } catch (error) {
     next(error);
