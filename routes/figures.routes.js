@@ -31,7 +31,9 @@ router.get("/by/:discipline", async (req, res, next) => {
 router.get("/:figureRef", async (req, res, next) => {
   try {
     const { figureRef } = req.params;
-    const oneFigure = await Figure.findOne({ ref: figureRef });
+    const oneFigure = await Figure.findOne({ ref: figureRef }).populate(
+      "discipline"
+    );
     res.status(200).json(oneFigure);
   } catch (error) {
     next(error);

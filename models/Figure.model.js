@@ -11,6 +11,7 @@ const figureSchema = new Schema({
   },
   discipline: {
     type: Schema.Types.ObjectId,
+    ref: "Discipline",
   },
   difficulty: {
     type: String,
