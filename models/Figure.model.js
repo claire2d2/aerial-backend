@@ -15,7 +15,7 @@ const figureSchema = new Schema({
   },
   difficulty: {
     type: String,
-    enum: ["beginner", "inter", "advanced"],
+    enum: ["beginner", "intermediate", "advanced"],
   },
   image: String,
   imgArtist: String,
