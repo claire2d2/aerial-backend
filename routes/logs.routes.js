@@ -8,7 +8,7 @@ router.use(isAuthenticated);
 
 // route to find all routes with a specific figure Id and the user
 
-router.get("/:figureId", isAuthenticated, async (req, res, next) => {
+router.get("/:figureId", async (req, res, next) => {
   try {
     const figure = req.params.figureId;
     const user = req.currentUserId;
@@ -20,7 +20,7 @@ router.get("/:figureId", isAuthenticated, async (req, res, next) => {
 });
 
 // route to let a user post a log to a specific figure
-router.post("/:figureId", isAuthenticated, async (req, res, next) => {
+router.post("/:figureId", async (req, res, next) => {
   try {
     const { status, image, content, date } = req.body;
     const figure = req.params.figureId;
