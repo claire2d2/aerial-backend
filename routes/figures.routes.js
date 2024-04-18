@@ -4,6 +4,16 @@ const ProgressLog = require("./../models/ProgressLog.model");
 
 //! all routes here are prefixed with /api/figures
 
+// get all the figures regardless of their discipline
+router.get("/", async (req, res, next) => {
+  try {
+    const allFigures = await Figure.find();
+    res.status(200).json(allFigures);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // get all the figures depending on the discipline
 router.get("/by/:discipline", async (req, res, next) => {
   try {
