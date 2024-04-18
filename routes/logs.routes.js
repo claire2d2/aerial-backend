@@ -27,7 +27,7 @@ router.post("/:figureId", isAuthenticated, async (req, res, next) => {
     const owner = req.currentUserId;
     const logToCreate = { figure, owner, status, image, content, date };
     const createdLog = await ProgressLog.create(logToCreate);
-    res.status(200).json(createdLog);
+    res.status(201).json(createdLog);
   } catch (error) {
     next(error);
   }
