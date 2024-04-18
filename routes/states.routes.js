@@ -1,14 +1,22 @@
 const router = require("express").Router();
 const State = require("./../models/State.model");
+const isAuthenticated = require("./../middlewares/isAuthenticated");
 
 //! all routes here are prefixed with /api/states
 
 // find the id for the state to edit when trying to modify it
-router.get("/:figureId", async (req, res, next) => {
+
+router.use(isAuthenticated);
+
+router.get("/fig/:figureId", async (req, res, next) => {
   try {
-    const owner = req.currentUserId;
-    const figure = req.params.figureId;
-    const foundState = await State.findOne({ figure: figure, owner: owner });
+    ownerId: req.currentUserId;
+    console.log(ownerId);
+    const figureId = req.params.figureId;
+    const foundState = await State.findOne({
+      figure: figureId,
+      owner: ownerId,
+    });
     res.status(200).json(foundState);
   } catch (error) {
     next(error);
