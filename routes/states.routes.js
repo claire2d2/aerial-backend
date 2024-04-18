@@ -10,8 +10,7 @@ router.use(isAuthenticated);
 
 router.get("/fig/:figureId", async (req, res, next) => {
   try {
-    ownerId: req.currentUserId;
-    console.log(ownerId);
+    const ownerId = req.currentUserId;
     const figureId = req.params.figureId;
     const foundState = await State.findOne({
       figure: figureId,

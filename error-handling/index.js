@@ -11,11 +11,24 @@ module.exports = (app) => {
 
     // only render if the error ocurred before sending the response
     if (!res.headersSent) {
-      res
-        .status(500)
-        .json({
-          message: "Internal server error. Check the server console",
-        });
+      res.status(500).json({
+        message: "Internal server error. Check the server console",
+      });
+    }
+  });
+
+  app.use((err, req, res, next) => {
+    // whenever you call next(err), this middleware will handle the error
+    // always logs the error
+    console.error("ERROR", req.method, req.path, err);
+    if (err instanceof jwt.TokenExpiredError && !res.headersSent) {
+      return res.status(400).json({ message: "Token expired" });
+    }
+    // only render if the error ocurred before sending the response
+    if (!res.headersSent) {
+      res.status(500).json({
+        message: "Internal server error. Check the server console",
+      });
     }
   });
 };

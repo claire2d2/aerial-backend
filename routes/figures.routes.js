@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const Figure = require("./../models/Figure.model");
-const ProgressLog = require("./../models/ProgressLog.model");
 
 //! all routes here are prefixed with /api/figures
 
@@ -48,10 +47,10 @@ router.get("/:figureRef", async (req, res, next) => {
     const oneFigure = await Figure.findOne({ ref: figureRef }).populate(
       "discipline"
     );
-    const progressLogs = await ProgressLog.find({ figure: oneFigure.id })
-      .sort({ date: -1 })
-      .populate("status");
-    res.status(200).json({ oneFigure, progressLogs });
+    // const progressLogs = await ProgressLog.find({ figure: oneFigure.id })
+    //   .sort({ date: -1 })
+    //   .populate("status");
+    res.status(200).json(oneFigure);
   } catch (error) {
     next(error);
   }
