@@ -4,9 +4,11 @@ const ProgressLog = require("../models/ProgressLog.model");
 //! all routes here are prefixed with /api/logs
 
 // route to let a user post a log to a specific figure
-router.post("/", async (req, res, next) => {
+router.post("/:figureId", async (req, res, next) => {
   try {
-    const { figure, owner, status, image, content, date } = req.body;
+    const { status, image, content, date } = req.body;
+    const owner = req.currentUserId;
+    const figure = req.params.figureId;
     const logToCreate = { figure, owner, status, image, content, date };
     const createdLog = await ProgressLog.create(logToCreate);
     res.status(200).json(createdLog);
