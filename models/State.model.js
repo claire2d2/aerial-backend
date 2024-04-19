@@ -1,8 +1,14 @@
 const { Schema, model } = require("mongoose");
 
 const stateSchema = new Schema({
-  owner: Schema.Types.ObjectId,
-  figure: Schema.Types.ObjectId,
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+  figure: {
+    type: Schema.Types.ObjectId,
+    ref: "Figure",
+  },
   name: {
     type: String,
     enum: ["Not seen yet", "Wishlist", "Training", "One side", "Mastered"],

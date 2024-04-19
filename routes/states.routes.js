@@ -10,11 +10,11 @@ router.use(isAuthenticated);
 router.get("/", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.currentUserId;
-    const { activeFilters } = req.body;
+    const activeFilters = req.query.filtersQuery.split(",");
     const filteredStates = await State.find({
       name: { $in: activeFilters },
       owner: user,
-    });
+    }).populate("figure");
     res.status(200).json(filteredStates);
   } catch (error) {
     next(error);
