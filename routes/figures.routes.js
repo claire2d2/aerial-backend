@@ -7,7 +7,7 @@ const Figure = require("./../models/Figure.model");
 router.get("/", async (req, res, next) => {
   try {
     const allFigures = await Figure.find();
-    res.status(200).json(allFigures);
+    res.status(200).json(allFigures).sort();
   } catch (error) {
     next(error);
   }
@@ -31,8 +31,24 @@ router.get("/by/:discipline", async (req, res, next) => {
       default:
         break;
     }
-    const allFigures = await Figure.find({ discipline: disciplineId });
+    const allFigures = await Figure.find({ discipline: disciplineId }).sort({
+      name: 1,
+    });
     res.status(200).json(allFigures);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// get all the figures based on search
+
+router.get("/search/:figName", async (req, res, next) => {
+  try {
+    const search = req.params.figName;
+    const searchFigures = await Figure.find({
+      name: { $regex: new RegExp(search, "i") },
+    }).populate("discipline");
+    res.status(200).json(searchFigures);
   } catch (error) {
     next(error);
   }
