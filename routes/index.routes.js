@@ -12,5 +12,6 @@ router.use("/favorites", require("./favorites.routes.js"));
 router.use("/disciplines", require("./disciplines.routes.js"));
 router.use("/logs", require("./logs.routes.js"));
 router.use("/states", require("./states.routes.js"));
+router.use("/entriesexits", require("./entriesexits.routes.js"));
 
 module.exports = router;

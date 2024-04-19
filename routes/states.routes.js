@@ -4,10 +4,24 @@ const isAuthenticated = require("./../middlewares/isAuthenticated");
 
 //! all routes here are prefixed with /api/states
 
-// find the id for the state to edit when trying to modify it
-
 router.use(isAuthenticated);
 
+// find all states included and populate with the figures in the state articles
+router.get("/", isAuthenticated, async (req, res, next) => {
+  try {
+    const user = req.currentUserId;
+    const { activeFilters } = req.body;
+    const filteredStates = await State.find({
+      name: { $in: activeFilters },
+      owner: user,
+    });
+    res.status(200).json(filteredStates);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// find the id for the state to edit when trying to modify it
 router.get("/fig/:figureId", async (req, res, next) => {
   try {
     const ownerId = req.currentUserId;
