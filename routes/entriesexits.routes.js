@@ -35,29 +35,29 @@ router.post("/exit/:figureId", isAuthenticated, async (req, res, next) => {
   }
 });
 
-// make a figure a favorite
-router.post("/:figureId", async (req, res, next) => {
+// get all the entries for a figure
+
+router.get("/entries/:figureId", async (req, res, next) => {
   try {
     const figure = req.params.figureId;
-    const user = req.currentUserId;
-    const alreadyFave = await Favorite.findOne({ figure: figure, user: user });
-    if (alreadyFave) {
-      return res.status(400).json({ message: "Fave already exists" });
-    }
-    const createdFave = await Favorite.create({ figure: figure, user: user });
-    res.status(201).json(createdFave);
+    const allEntries = await EntryExit.find({ figureTo: figure }).populate(
+      "figureFrom"
+    );
+    res.status(200).json(allEntries);
   } catch (error) {
     next(error);
   }
 });
 
-// remove figure from favorites
-router.delete("/:figureId", async (req, res, next) => {
+// get all the exits for a figure
+
+router.get("/exits/:figureId", async (req, res, next) => {
   try {
     const figure = req.params.figureId;
-    const user = req.currentUserId;
-    await Favorite.findOneAndDelete({ figure: figure, user: user });
-    res.sendStatus(204);
+    const allExits = await EntryExit.find({ figureFrom: figure }).populate(
+      "figureTo"
+    );
+    res.status(200).json(allExits);
   } catch (error) {
     next(error);
   }
