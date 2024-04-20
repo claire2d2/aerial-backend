@@ -6,10 +6,10 @@ const isAuthenticated = require("./../middlewares/isAuthenticated");
 router.use(isAuthenticated);
 
 // get all the favorite figures of a person
-router.get("/", async (req, res, next) => {
+router.get("/", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.currentUserId;
-    const allMyFaves = await Favorite.find({ user: user });
+    const allMyFaves = await Favorite.find({ user: user }).populate("figure");
     res.status(200).json(allMyFaves);
   } catch (error) {
     next(error);

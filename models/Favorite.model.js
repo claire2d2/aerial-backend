@@ -1,8 +1,12 @@
 const { Schema, model } = require("mongoose");
 
 const favoriteSchema = new Schema({
-  figure: Schema.Types.ObjectId,
-  user: Schema.Types.ObjectId,
+  figure: { type: Schema.Types.ObjectId, ref: "Figure" },
+  user: { type: Schema.Types.ObjectId, ref: "User" },
+  name: {
+    type: String,
+    default: "Favorites",
+  },
 });
 
 const Favorite = model("Favorite", favoriteSchema);

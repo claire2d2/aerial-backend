@@ -33,6 +33,7 @@ router.post("/signup", async (req, res, next) => {
         figure: figureId,
         owner: createdUser._id,
         name: "Not seen yet",
+        range: 0,
       });
     });
     await Promise.all(initialStates);
