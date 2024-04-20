@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const ProgressLog = require("../models/ProgressLog.model");
 const isAuthenticated = require("./../middlewares/isAuthenticated.js");
+const fileUploader = require("./../config/cloudinary.config.js");
 
 //! all routes here are prefixed with /api/logs
 
@@ -20,18 +21,34 @@ router.get("/:figureId", async (req, res, next) => {
 });
 
 // route to let a user post a log to a specific figure
-router.post("/:figureId", async (req, res, next) => {
-  try {
-    const { status, image, content, date } = req.body;
-    const figure = req.params.figureId;
-    const owner = req.currentUserId;
-    const logToCreate = { figure, owner, status, image, content, date };
-    const createdLog = await ProgressLog.create(logToCreate);
-    res.status(201).json(createdLog);
-  } catch (error) {
-    next(error);
+router.post(
+  "/:figureId",
+  fileUploader.single("image"),
+  async (req, res, next) => {
+    try {
+      const { status, content, date } = req.body;
+      const figure = req.params.figureId;
+      const owner = req.currentUserId;
+      let imageUrl = "";
+      if (req.file) {
+        imageUrl = req.file.path;
+      }
+      const logToCreate = {
+        figure,
+        owner,
+        status,
+        image: imageUrl,
+        content,
+        date,
+      };
+      const createdLog = await ProgressLog.create(logToCreate);
+      res.status(201).json(createdLog);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
   }
-});
+);
 
 // {
 //     figure: { type: Schema.Types.ObjectId, ref: "Figure" },
