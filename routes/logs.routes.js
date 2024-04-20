@@ -50,6 +50,16 @@ router.post(
   }
 );
 
+// let user delete his or her own log
+router.delete("/:logId", async (req, res, next) => {
+  try {
+    await ProgressLog.findOneAndDelete({
+      _id: req.params.logId,
+      owner: req.currentUserId,
+    });
+    res.sendStatus(204);
+  } catch (error) {}
+});
 // {
 //     figure: { type: Schema.Types.ObjectId, ref: "Figure" },
 //     owner: { type: Schema.Types.ObjectId, ref: "User" },
