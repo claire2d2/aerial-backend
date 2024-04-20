@@ -18,6 +18,11 @@ const stateSchema = new Schema({
     type: String,
     enum: ["Right side", "Left side"],
   },
+  range: {
+    type: Number,
+    min: 0,
+    max: 40,
+  },
 });
 
 const State = model("State", stateSchema);

@@ -17,9 +17,25 @@ const figureSchema = new Schema({
     type: String,
     enum: ["beginner", "intermediate", "advanced"],
   },
-  image: String,
-  imgArtist: String,
-  imgArtistUrl: String,
+  image: {
+    type: String,
+    default:
+      "https://res.cloudinary.com/dtjq1xo1o/image/upload/fl_preserve_transparency/v1713629786/aerialAPI/default_ogmqim.jpg?_s=public-apps",
+  },
+  imgArtist: {
+    type: String,
+    default: "missing",
+  },
+  imgArtistUrl: {
+    type: String,
+    default: "",
+  },
+  focus: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Zone",
+    },
+  ],
 });
 
 const Figure = model("Figure", figureSchema);

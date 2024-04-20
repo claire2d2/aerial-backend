@@ -40,8 +40,8 @@ router.get("/fig/:figureId", async (req, res, next) => {
 router.put("/:stateId", async (req, res, next) => {
   try {
     const id = req.params.stateId;
-    const { name, oneSide } = req.body;
-    const stateToEdit = { name, oneSide };
+    const { name, oneSide, range } = req.body;
+    const stateToEdit = { name, oneSide, range };
     const updatedState = await State.findOneAndUpdate(
       { _id: id },
       stateToEdit,
