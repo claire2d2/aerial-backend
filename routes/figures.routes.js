@@ -4,22 +4,41 @@ var ObjectId = require("mongoose").Types.ObjectId;
 
 //! all routes here are prefixed with /api/figures
 
-// get all the figures regardless of their discipline
-router.get("/", async (req, res, next) => {
+// // get all the figures regardless of their discipline
+// router.get("/", async (req, res, next) => {
+//   try {
+//     const allFigures = await Figure.find();
+//     res.status(200).json(allFigures);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
+// get all the figures depending on the discipline
+router.get(`/`, async (req, res, next) => {
   try {
-    const allFigures = await Figure.find();
+    // const foundDiscipline = await Discipline.findById(disciplineId);
+    // console.log(foundDiscipline);
+    console.log(req.query);
+    const queryFilters = generateFilters(req.query);
+    console.log(queryFilters);
+    const allFigures = await Figure.find(queryFilters).populate("focus").sort({
+      name: 1,
+    });
     res.status(200).json(allFigures);
   } catch (error) {
     next(error);
   }
 });
 
-// get all the figures depending on the discipline
-router.get("/by/:ref", async (req, res, next) => {
-  try {
+// get figures based on filters
+//! not optimal, to improve and avoid hardcoding the zones and discipline Ids
+
+function generateFilters(query) {
+  const search = {};
+  if (query.discipline) {
     let disciplineId;
-    const { ref } = req.params;
-    switch (ref) {
+    switch (query.discipline) {
       case "pole":
         disciplineId = "661e485f64c347c27353960d";
         break;
@@ -32,23 +51,57 @@ router.get("/by/:ref", async (req, res, next) => {
       default:
         break;
     }
-    // const foundDiscipline = await Discipline.findById(disciplineId);
-    // console.log(foundDiscipline);
-    const objectId = new ObjectId(disciplineId);
-    const allFigures = await Figure.find({
-      discipline: objectId,
-    }).sort({
-      name: 1,
-    });
-    console.log(disciplineId);
-    res.status(200).json(allFigures);
-  } catch (error) {
-    next(error);
+    search.discipline = new ObjectId(disciplineId);
   }
-});
+  if (query.levels && query.levels.length !== 0) {
+    const levels = query.levels.split(",");
+    search.difficulty = { $in: levels };
+  }
+  // note for tomorrow : find a way to link zone names and zone ids, then replace zoneName in ObjectId with that
+  if (query.zones && query.zones.length !== 0) {
+    const zoneNames = query.zones.split(",");
+    const zoneIds = [];
+    for (zone of zoneNames) {
+      switch (zone) {
+        case "legs":
+          zoneIds.push("6623ecbef01d3907e8242123");
+          break;
+        case "shoulders":
+          zoneIds.push("6623ecbef01d3907e8242124");
+          break;
+        case "core":
+          zoneIds.push("6623ecbef01d3907e8242125");
+          break;
+        case "arms":
+          zoneIds.push("6623ecbef01d3907e8242126");
+          break;
+        case "back":
+          zoneIds.push("6623ecbef01d3907e8242127");
+          break;
+        case "hips":
+          zoneIds.push("6623ecbef01d3907e8242128");
+          break;
+        case "knees":
+          zoneIds.push("6623ef3af01d3907e824212c");
+          break;
+        case "elbows":
+          zoneIds.push("6623ef3af01d3907e824212d");
+          break;
+        case "armpits":
+          zoneIds.push("6623ef3af01d3907e824212e");
+          break;
+        default:
+          break;
+      }
+    }
+    const zoneObjectIds = zoneIds.map((zoneId) => new ObjectId(zoneId));
+    search.focus = { $elemMatch: { $in: zoneObjectIds } };
+  }
+
+  return search;
+}
 
 // get all the figures based on search
-
 router.get("/search/:figName", async (req, res, next) => {
   try {
     const search = req.params.figName;
