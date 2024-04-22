@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const Figure = require("./../models/Figure.model");
+const State = require("./../models/State.model");
+const User = require("./../models/User.model");
 var ObjectId = require("mongoose").Types.ObjectId;
 const isAuthenticated = require("./../middlewares/isAuthenticated");
 const isAdmin = require("./../middlewares/isAdmin");
@@ -143,7 +145,20 @@ router.post("/", isAuthenticated, async (req, res, next) => {
       imgArtistUrl,
       focus,
     };
+
     const createdFig = await Figure.create(figToCreate);
+    // create a "not seen yet" state for all existing users
+    const allUsers = await User.find();
+
+    const addStateToUsers = allUsers.map(async (user) => {
+      await State.create({
+        figure: createdFig._id,
+        owner: user._id,
+        name: "Not seen yet",
+        range: 0,
+      });
+    });
+    await Promise.all(addStateToUsers);
     res.status(201).json(createdFig);
   } catch (error) {
     next(error);
