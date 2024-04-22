@@ -136,13 +136,13 @@ router.post("/", isAuthenticated, async (req, res, next) => {
       focus,
     } = req.body;
     const figToCreate = {
-      name,
-      ref,
-      discipline,
+      name: name.toLowerCase(),
+      ref: ref.toLowerCase(),
+      discipline: discipline.toLowerCase(),
       difficulty,
-      image,
-      imgArtist,
-      imgArtistUrl,
+      image: image.toLowerCase(),
+      imgArtist: imgArtist.toLowerCase(),
+      imgArtistUrl: imgArtistUrl.toLowerCase(),
       focus,
     };
 
