@@ -39,21 +39,7 @@ router.get(`/`, async (req, res, next) => {
 function generateFilters(query) {
   const search = {};
   if (query.discipline) {
-    let disciplineId;
-    switch (query.discipline) {
-      case "pole":
-        disciplineId = "661e485f64c347c27353960d";
-        break;
-      case "contorsion":
-        disciplineId = "661e485f64c347c27353960f";
-        break;
-      case "aerial-hoop":
-        disciplineId = "661e485f64c347c27353960e";
-        break;
-      default:
-        break;
-    }
-    search.discipline = new ObjectId(disciplineId);
+    search.discipline = new ObjectId(query.discipline);
   }
   if (query.levels && query.levels.length !== 0) {
     const levels = query.levels.split(",");
