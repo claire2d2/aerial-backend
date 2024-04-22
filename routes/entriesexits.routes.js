@@ -13,7 +13,6 @@ router.post("/entry/:figureId", isAuthenticated, async (req, res, next) => {
     const { entry } = req.body;
     const propToCreate = { owner: user, figureTo: figure, figureFrom: entry };
     const createdProp = await EntryExit.create(propToCreate);
-    await EntryExit.create();
     res.status(201).json(createdProp);
   } catch (error) {
     next(error);

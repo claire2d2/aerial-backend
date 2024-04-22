@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const Figure = require("./../models/Figure.model");
 var ObjectId = require("mongoose").Types.ObjectId;
+const isAuthenticated = require("./../middlewares/isAuthenticated");
+const isAdmin = require("./../middlewares/isAdmin");
 
 //! all routes here are prefixed with /api/figures
 
@@ -115,8 +117,7 @@ router.get("/search/:figName", async (req, res, next) => {
 });
 
 // get a specific figure and the related progress logs
-// TODO get the related entries/exits?
-// TODO if possibility to add a figure, add all the states for existing users
+// ? get the related entries/exits
 router.get("/fig/:figureRef", async (req, res, next) => {
   try {
     const { figureRef } = req.params;
@@ -133,4 +134,33 @@ router.get("/fig/:figureRef", async (req, res, next) => {
   }
 });
 
+// TODO if possibility to add a figure, add all the states for existing users
+router.post("/", isAuthenticated, async (req, res, next) => {
+  try {
+    const {
+      name,
+      ref,
+      discipline,
+      difficulty,
+      image,
+      imgArtist,
+      imgArtistUrl,
+      focus,
+    } = req.body;
+    const figToCreate = {
+      name,
+      ref,
+      discipline,
+      difficulty,
+      image,
+      imgArtist,
+      imgArtistUrl,
+      focus,
+    };
+    const createdFig = await Figure.create(figToCreate);
+    res.status(201).json(createdFig);
+  } catch (error) {
+    next(error);
+  }
+});
 module.exports = router;

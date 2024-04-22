@@ -14,5 +14,6 @@ router.use("/zones", require("./zones.routes.js"));
 router.use("/logs", require("./logs.routes.js"));
 router.use("/states", require("./states.routes.js"));
 router.use("/entriesexits", require("./entriesexits.routes.js"));
+router.use("/combos", require("./combos.routes.js"));
 
 module.exports = router;
