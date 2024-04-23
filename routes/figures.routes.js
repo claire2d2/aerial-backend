@@ -135,6 +135,13 @@ router.post("/", isAuthenticated, async (req, res, next) => {
       imgArtistUrl,
       focus,
     } = req.body;
+    const foundFigName = await Figure.findOne({ name });
+    if (foundFigName) {
+      return res.status(400).json({
+        message:
+          "This figure already exists! Please check if another discipline has a figure with the same name.",
+      });
+    }
     const figToCreate = {
       name: name.toLowerCase(),
       ref: ref.toLowerCase(),
