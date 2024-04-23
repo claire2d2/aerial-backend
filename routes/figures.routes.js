@@ -47,7 +47,7 @@ function generateFilters(query) {
     const levels = query.levels.split(",");
     search.difficulty = { $in: levels };
   }
-  // note for tomorrow : find a way to link zone names and zone ids, then replace zoneName in ObjectId with that
+  // TODO : find a way to link zone names and zone ids, then replace zoneName in ObjectId with that
   if (query.zones && query.zones.length !== 0) {
     const zoneNames = query.zones.split(",");
     const zoneIds = [];
@@ -122,7 +122,7 @@ router.get("/fig/:figureRef", async (req, res, next) => {
   }
 });
 
-// TODO if possibility to add a figure, add all the states for existing users
+// add a figure when user is authenticated (mod or admin is filtered through front end)
 router.post("/", isAuthenticated, async (req, res, next) => {
   try {
     const {
@@ -171,4 +171,31 @@ router.post("/", isAuthenticated, async (req, res, next) => {
     next(error);
   }
 });
+
+// edit an existing figure when user is authenticated (mod or admin is filtered through front end)
+router.put("/:figureId", async (req, res, next) => {
+  try {
+    const id = req.params.figureId;
+    const { name, ref, difficulty, image, imgArtist, imgArtistUrl, focus } =
+      req.body;
+    const figureToEdit = {
+      name,
+      ref,
+      difficulty,
+      image,
+      imgArtist,
+      imgArtistUrl,
+      focus,
+    };
+    const updatedFigure = await Figure.findOneAndUpdate(
+      { _id: id },
+      figureToEdit,
+      { new: true }
+    );
+    res.status(200).json(updatedFigure);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

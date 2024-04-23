@@ -11,9 +11,9 @@ router.get("/", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.currentUserId;
     const searchFor = { owner: user };
-    searchFor.$or = [];
     const allStates = ["Mastered", "Training", "Wishlist", "Not seen yet"];
     if (req.query.filtersQuery) {
+      searchFor.$or = [];
       const activeFilters = req.query.filtersQuery.split(",");
       if (activeFilters.length > 0) {
         for (let i = 0; i < activeFilters.length; i++) {
