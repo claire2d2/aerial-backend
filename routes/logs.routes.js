@@ -42,6 +42,7 @@ router.post(
           uploadOptions
         );
         imageUrl = result.secure_url;
+        imgPublicId = result.public_id;
       }
       const logToCreate = {
         figure,
@@ -50,6 +51,7 @@ router.post(
         image: imageUrl,
         content,
         date,
+        imgPublicId,
       };
       const createdLog = await ProgressLog.create(logToCreate);
       res.status(201).json(createdLog);
@@ -76,17 +78,13 @@ router.delete("/:logId", async (req, res, next) => {
 
     // Check if the log entry has an associated image
     if (logToDelete.image) {
-      // Extract the public ID from the Cloudinary URL
-      const publicId = logToDelete.image.substring(
-        logToDelete.image.lastIndexOf("/") + 1,
-        logToDelete.image.lastIndexOf(".")
-      );
-
       // Use Cloudinary's API to delete the image
-      await cloudinary.uploader.destroy(publicId);
+      await cloudinary.uploader.destroy(logToDelete.imgPublicId);
     }
     res.sendStatus(204);
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 });
 // {
 //     figure: { type: Schema.Types.ObjectId, ref: "Figure" },

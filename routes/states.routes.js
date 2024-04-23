@@ -10,11 +10,22 @@ router.use(isAuthenticated);
 router.get("/", isAuthenticated, async (req, res, next) => {
   try {
     const user = req.currentUserId;
-    const activeFilters = req.query.filtersQuery.split(",");
-    const filteredStates = await State.find({
-      name: { $in: activeFilters },
-      owner: user,
-    }).populate("figure");
+    const searchFor = { owner: user };
+    const allStates = ["Mastered", "Training", "Wishlist", "Not seen yet"];
+    if (req.query.filtersQuery) {
+      searchFor.$or = [];
+      const activeFilters = req.query.filtersQuery.split(",");
+      if (activeFilters.length > 0) {
+        for (let i = 0; i < activeFilters.length; i++) {
+          if (allStates.includes(activeFilters[i])) {
+            searchFor.$or.push({ name: activeFilters[i], oneSide: null });
+          } else {
+            searchFor.$or.push({ oneSide: activeFilters[i] });
+          }
+        }
+      }
+    }
+    const filteredStates = await State.find(searchFor).populate("figure");
     res.status(200).json(filteredStates);
   } catch (error) {
     next(error);

@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const Figure = require("./../models/Figure.model");
+const State = require("./../models/State.model");
+const User = require("./../models/User.model");
 var ObjectId = require("mongoose").Types.ObjectId;
 const isAuthenticated = require("./../middlewares/isAuthenticated");
 const isAdmin = require("./../middlewares/isAdmin");
@@ -45,7 +47,7 @@ function generateFilters(query) {
     const levels = query.levels.split(",");
     search.difficulty = { $in: levels };
   }
-  // note for tomorrow : find a way to link zone names and zone ids, then replace zoneName in ObjectId with that
+  // TODO : find a way to link zone names and zone ids, then replace zoneName in ObjectId with that
   if (query.zones && query.zones.length !== 0) {
     const zoneNames = query.zones.split(",");
     const zoneIds = [];
@@ -120,7 +122,7 @@ router.get("/fig/:figureRef", async (req, res, next) => {
   }
 });
 
-// TODO if possibility to add a figure, add all the states for existing users
+// add a figure when user is authenticated (mod or admin is filtered through front end)
 router.post("/", isAuthenticated, async (req, res, next) => {
   try {
     const {
@@ -133,20 +135,67 @@ router.post("/", isAuthenticated, async (req, res, next) => {
       imgArtistUrl,
       focus,
     } = req.body;
+    const foundFigName = await Figure.findOne({ name });
+    if (foundFigName) {
+      return res.status(400).json({
+        message:
+          "This figure already exists! Please check if another discipline has a figure with the same name.",
+      });
+    }
     const figToCreate = {
+      name: name.toLowerCase(),
+      ref: ref.toLowerCase(),
+      discipline: discipline.toLowerCase(),
+      difficulty,
+      image: image.toLowerCase(),
+      imgArtist: imgArtist.toLowerCase(),
+      imgArtistUrl: imgArtistUrl.toLowerCase(),
+      focus,
+    };
+
+    const createdFig = await Figure.create(figToCreate);
+    // create a "not seen yet" state for all existing users
+    const allUsers = await User.find();
+
+    const addStateToUsers = allUsers.map(async (user) => {
+      await State.create({
+        figure: createdFig._id,
+        owner: user._id,
+        name: "Not seen yet",
+        range: 0,
+      });
+    });
+    await Promise.all(addStateToUsers);
+    res.status(201).json(createdFig);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// edit an existing figure when user is authenticated (mod or admin is filtered through front end)
+router.put("/:figureId", async (req, res, next) => {
+  try {
+    const id = req.params.figureId;
+    const { name, ref, difficulty, image, imgArtist, imgArtistUrl, focus } =
+      req.body;
+    const figureToEdit = {
       name,
       ref,
-      discipline,
       difficulty,
       image,
       imgArtist,
       imgArtistUrl,
       focus,
     };
-    const createdFig = await Figure.create(figToCreate);
-    res.status(201).json(createdFig);
+    const updatedFigure = await Figure.findOneAndUpdate(
+      { _id: id },
+      figureToEdit,
+      { new: true }
+    );
+    res.status(200).json(updatedFigure);
   } catch (error) {
     next(error);
   }
 });
+
 module.exports = router;

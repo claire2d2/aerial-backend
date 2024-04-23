@@ -4,18 +4,22 @@ const figureSchema = new Schema({
   name: {
     type: String,
     unique: true,
+    required: true,
   },
   ref: {
     type: String,
     unique: true,
+    required: true,
   },
   discipline: {
     type: Schema.Types.ObjectId,
     ref: "Discipline",
+    required: true,
   },
   difficulty: {
     type: String,
     enum: ["beginner", "intermediate", "advanced"],
+    required: true,
   },
   image: {
     type: String,

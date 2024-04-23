@@ -8,6 +8,7 @@ const progresslogSchema = new Schema(
     image: String,
     content: String,
     date: Date,
+    imgPublicId: String,
   },
   { timestamps: true }
 );
