@@ -26,9 +26,12 @@ router.get(`/`, async (req, res, next) => {
     console.log(req.query);
     const queryFilters = generateFilters(req.query);
     console.log(queryFilters);
-    const allFigures = await Figure.find(queryFilters).populate("focus").sort({
-      name: 1,
-    });
+    const allFigures = await Figure.find(queryFilters)
+      .populate("focus")
+      .populate("discipline")
+      .sort({
+        name: 1,
+      });
     res.status(200).json(allFigures);
   } catch (error) {
     next(error);
