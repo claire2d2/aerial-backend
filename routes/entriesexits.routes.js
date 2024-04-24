@@ -11,6 +11,22 @@ router.post("/entry/:figureId", isAuthenticated, async (req, res, next) => {
     const user = req.currentUserId;
     const figure = req.params.figureId;
     const { entry } = req.body;
+    const foundEntry = await EntryExit.findOne({
+      figureFrom: entry,
+      figureTo: figure,
+    });
+    if (foundEntry) {
+      return res
+        .status(400)
+        .json({ message: "This figure has already been proposed!" });
+    }
+    if (entry === figure) {
+      return res
+        .status(400)
+        .json({
+          message: "You can't propose the same figure as the current one!",
+        });
+    }
     const propToCreate = { owner: user, figureTo: figure, figureFrom: entry };
     const createdProp = await EntryExit.create(propToCreate);
     res.status(201).json(createdProp);
@@ -25,6 +41,22 @@ router.post("/exit/:figureId", isAuthenticated, async (req, res, next) => {
     const user = req.currentUserId;
     const figure = req.params.figureId;
     const { exit } = req.body;
+    const foundExit = await EntryExit.findOne({
+      figureFrom: figure,
+      figureTo: exit,
+    });
+    if (foundExit) {
+      return res
+        .status(400)
+        .json({ message: "This figure has already been proposed!" });
+    }
+    if (exit === figure) {
+      return res
+        .status(400)
+        .json({
+          message: "You can't propose the same figure as the current one!",
+        });
+    }
     const propToCreate = { owner: user, figureTo: exit, figureFrom: figure };
     const createdProp = await EntryExit.create(propToCreate);
     await EntryExit.create();

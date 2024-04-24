@@ -16,6 +16,16 @@ router.get("/", isAuthenticated, async (req, res, next) => {
   }
 });
 
+// get all the favorites in general
+router.get("/all", async (req, res, next) => {
+  try {
+    const allFaves = await Favorite.find().populate("figure");
+    res.status(200).json(allFaves);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // make a figure a favorite
 router.post("/:figureId", async (req, res, next) => {
   try {
