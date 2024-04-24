@@ -70,8 +70,23 @@ router.get("/entries/:figureId", async (req, res, next) => {
     const figure = req.params.figureId;
     const allEntries = await EntryExit.find({ figureTo: figure }).populate(
       "figureFrom"
+    ); // Fetch the counts of likes for each entry
+    const entriesWithLikes = await Promise.all(
+      allEntries.map(async (entry) => {
+        const likeCount = await EntryExitLike.countDocuments({
+          entryExit: entry._id,
+        });
+        return { entry, likeCount };
+      })
     );
-    res.status(200).json(allEntries);
+
+    // Sort the entries based on the number of likes
+    entriesWithLikes.sort((a, b) => b.likeCount - a.likeCount);
+
+    // Extract only the entries from the sorted array
+    const sortedEntries = entriesWithLikes.map((item) => item.entry);
+
+    res.status(200).json(sortedEntries);
   } catch (error) {
     next(error);
   }
@@ -84,8 +99,23 @@ router.get("/exits/:figureId", async (req, res, next) => {
     const figure = req.params.figureId;
     const allExits = await EntryExit.find({ figureFrom: figure }).populate(
       "figureTo"
+    ); // Fetch the counts of likes for each exit
+    const exitsWithLikes = await Promise.all(
+      allExits.map(async (exit) => {
+        const likeCount = await EntryExitLike.countDocuments({
+          entryExit: exit._id,
+        });
+        return { exit, likeCount };
+      })
     );
-    res.status(200).json(allExits);
+
+    // Sort the exits based on the number of likes
+    exitsWithLikes.sort((a, b) => b.likeCount - a.likeCount);
+
+    // Extract only the exits from the sorted array
+    const sortedExits = exitsWithLikes.map((item) => item.exit);
+
+    res.status(200).json(sortedExits);
   } catch (error) {
     next(error);
   }
@@ -135,13 +165,11 @@ router.delete("/like/:propId", async (req, res, next) => {
 router.get("/likes/:propId", async (req, res, next) => {
   try {
     const proposition = req.params.propId;
-    const allLikes = await EntryExitLike.find({ entryExit: proposition })nbi;
+    const allLikes = await EntryExitLike.find({ entryExit: proposition });
     res.status(200).json(allLikes);
   } catch (error) {
     next(error);
   }
 });
-
-
 
 module.exports = router;
