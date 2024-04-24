@@ -32,7 +32,7 @@ router.get("/", isAuthenticated, async (req, res, next) => {
     const foundCombos = await Combo.find({
       owner: owner,
       discipline: discipline,
-    });
+    }).populate("figures");
     res.status(200).json(foundCombos);
   } catch (error) {
     next(error);
@@ -43,15 +43,33 @@ router.get("/", isAuthenticated, async (req, res, next) => {
 router.post("/", isAuthenticated, async (req, res, next) => {
   try {
     const owner = req.currentUserId;
-    const { name, discipline, figures } = req.body;
+    const { name, discipline, figures, comment } = req.body;
     const comboToCreate = {
       owner: owner,
       name: name,
       discipline: discipline,
       figures: figures,
+      comment: comment,
     };
     const createdCombo = await Combo.create(comboToCreate);
     res.status(201).json(createdCombo);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// edit a combo
+router.put("/:comboId", isAuthenticated, async (req, res, next) => {
+  try {
+    const id = req.params.comboId;
+    const { name, discipline, figures, comment } = req.body;
+    const comboToEdit = { name, discipline, figures, comment };
+    const updatedCombo = await Combo.findOneAndUpdate(
+      { _id: id },
+      comboToEdit,
+      { new: true }
+    );
+    res.status(200).json(updatedCombo);
   } catch (error) {
     next(error);
   }
