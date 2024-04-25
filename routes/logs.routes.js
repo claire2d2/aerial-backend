@@ -31,6 +31,7 @@ router.post(
       const figure = req.params.figureId;
       const owner = req.currentUserId;
       let imageUrl = "";
+      let imgPublicId = "";
       // Adjust the image quality (optional)
       const uploadOptions = {
         quality: 60, // Adjust the quality as needed (0 to 100)
@@ -44,6 +45,7 @@ router.post(
         imageUrl = result.secure_url;
         imgPublicId = result.public_id;
       }
+
       const logToCreate = {
         figure,
         owner,
