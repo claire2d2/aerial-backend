@@ -11,27 +11,11 @@ router.use(isAuthenticated);
 router.get("/", isAuthenticated, async (req, res, next) => {
   try {
     const owner = req.currentUserId;
-    let discipline;
-    if (req.query.discipline) {
-      let disciplineId;
-      switch (req.query.discipline) {
-        case "pole":
-          disciplineId = "661e485f64c347c27353960d";
-          break;
-        case "contorsion":
-          disciplineId = "661e485f64c347c27353960f";
-          break;
-        case "aerial-hoop":
-          disciplineId = "661e485f64c347c27353960e";
-          break;
-        default:
-          break;
-      }
-      discipline = new ObjectId(disciplineId);
-    }
+    const { discipline } = req.query;
+    disciplineId = new ObjectId(discipline);
     const foundCombos = await Combo.find({
       owner: owner,
-      discipline: discipline,
+      discipline: disciplineId,
     }).populate("figures");
     res.status(200).json(foundCombos);
   } catch (error) {
