@@ -67,6 +67,45 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
+router.put("/changepassword", isAuthenticated, async (req, res, next) => {
+  try {
+    const { user } = req.currentUserId;
+    const { currentPassword, newPassword } = req.body;
+    const foundUser = await User.findOne({ user: user });
+    const correctPassword = await bcrypt.compare(
+      currentPassword,
+      foundUser.password
+    );
+    if (!correctPassword) {
+      return res.status(400).json({ message: "Wrong password" });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, SALT);
+    const updatedPassword = await User.findOneAndUpdate(
+      { user: user },
+      { password: hashedPassword },
+      { new: true }
+    );
+    res.status(200).json(updatedPassword);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/preferences", isAuthenticated, async (req, res, next) => {
+  try {
+    const { user } = req.currentUserId;
+    const { darkModePref, filterHistPref } = req.body;
+    const updatedPreferences = await User.findOneAndUpdate(
+      { user: user },
+      { darkModePref: darkModePref, filterHistPref: filterHistPref },
+      { new: true }
+    );
+    res.status(200).json(updatedPreferences);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get("/verify", isAuthenticated, async (req, res, next) => {
   try {
     const user = await User.findById(req.currentUserId);
