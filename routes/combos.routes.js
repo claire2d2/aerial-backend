@@ -59,4 +59,19 @@ router.put("/:comboId", isAuthenticated, async (req, res, next) => {
   }
 });
 
+// delete a combo
+router.delete("/:comboId", isAuthenticated, async (req, res, next) => {
+  try {
+    const id = req.params.comboId;
+    const owner = req.currentUserId;
+    await Combo.findOneAndDelete({
+      _id: id,
+      owner: owner,
+    });
+    res.status(204);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
